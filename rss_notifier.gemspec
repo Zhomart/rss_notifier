@@ -10,7 +10,7 @@ Gem::Specification.new do |spec|
   spec.email         = ["mzhomart@gmail.com"]
 
   spec.summary       = %q{Notifies you when RSS updates via Pushbullet and Email}
-  spec.description   = %q{RSS notification}
+  spec.description   = %q{Notifies you when RSS updates via Pushbullet and Email}
   spec.homepage      = "https://github.com/Zhomart/rss_notifier"
   spec.license       = "MIT"
 
@@ -22,7 +22,6 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'nokogiri', '~> 1.6.7.2'
   spec.add_dependency 'http', '~> 1.0.2'
   spec.add_dependency 'thor', '~> 0.19.1'
-  spec.add_dependency 'oj', '~> 2.14.5'
 
   spec.add_development_dependency "bundler", "~> 1.11"
   spec.add_development_dependency "rake", "~> 10.0"

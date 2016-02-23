@@ -1,5 +1,4 @@
 require 'yaml/store'
-# require 'pstore'
 
 module RssNotifier
   class Db
@@ -59,7 +58,6 @@ module RssNotifier
 
     def self.load(filename)
       store = YAML::Store.new(filename)
-      # store = PStore.new(filename)
       db = RssNotifier::Db.new(store)
       store.transaction do
         db.items = store['items'] || {}

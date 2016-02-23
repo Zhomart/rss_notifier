@@ -1,5 +1,5 @@
 require 'http'
-require 'oj'
+require 'json'
 
 module RssNotifier
   module Adapter
@@ -14,7 +14,7 @@ module RssNotifier
       end
 
       def notify(item)
-        body = Oj.dump({
+        body = JSON.dump({
           'type' => 'link',
           'title' => "#{item.rss_title}",
           'body' => item.title,

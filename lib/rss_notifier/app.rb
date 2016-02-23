@@ -7,8 +7,6 @@ require 'pathname'
 require 'rss'
 require 'http'
 
-require 'pry'
-
 module RssNotifier
   class App
 
