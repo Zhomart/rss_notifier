@@ -17,15 +17,15 @@ module RssNotifier
       params and params.each do |k, v|
         self.send("#{k}=", v)
       end
-      self.is_changed = true
+      self.is_changed = false
     end
 
     def update(params)
-      self.is_changed = false
+      old_title = self.title
       params.each do |k, v|
-        self.is_changed ||= send(k) != v
         send("#{k}=", v)
       end
+      self.is_changed = old_title != self.title
     end
 
     def changed?
