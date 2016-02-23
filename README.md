@@ -8,19 +8,25 @@ It checks given rss urls every given period and notifies you using [Pushbullet](
 Install the gem
 
 ```
-    $ gem install rss_notifier
+$ gem install rss_notifier
 ```
 
 Then initialize it somewhere
 
 ```
-  $ mkdir ~/craigslist
-  $ cd ~/craigslist
-  $ rss_notifier init --force
-  $ vim config.yml
-  $ rss_notifier start
-    <CTRL-C> load initial rss content without notification.
-  $ rss_notifier start --notify
+$ mkdir ~/craigslist
+$ cd ~/craigslist
+$ rss_notifier init --force
+```
+
+Configure `config.yml`. Then start `rss_notifier` to load initial rss content
+without notification. Only then start `rss_notifier` with notification.
+Otherwise your email/pushbullet will be flooded.
+
+```
+$ rss_notifier start
+  <CTRL-C>
+$ rss_notifier start --notify
 ```
 
 If you want it to run in the background, use `tmux`.

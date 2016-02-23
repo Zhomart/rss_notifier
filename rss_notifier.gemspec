@@ -9,8 +9,8 @@ Gem::Specification.new do |spec|
   spec.authors       = ["Zhomart Mukhamejanov"]
   spec.email         = ["mzhomart@gmail.com"]
 
-  spec.summary       = %q{Notifies you when RSS updates via Pushbullet and Email}
-  spec.description   = %q{Notifies you when RSS updates via Pushbullet and Email}
+  spec.summary       = %q{RSS Notification}
+  spec.description   = %q{Notifies RSS updates via Pushbullet and Email}
   spec.homepage      = "https://github.com/Zhomart/rss_notifier"
   spec.license       = "MIT"
 
@@ -19,12 +19,11 @@ Gem::Specification.new do |spec|
   spec.executables   = spec.files.grep(%r[^bin/]).map { |f| File.basename(f) }
   spec.require_paths = ["lib"]
 
-  spec.add_dependency 'nokogiri', '~> 1.6.7.2'
-  spec.add_dependency 'http', '~> 1.0.2'
-  spec.add_dependency 'thor', '~> 0.19.1'
+  spec.add_dependency 'http', '~> 1.0'
+  spec.add_dependency 'thor', '~> 0.19'
 
   spec.add_development_dependency "bundler", "~> 1.11"
   spec.add_development_dependency "rake", "~> 10.0"
   spec.add_development_dependency "minitest", "~> 5.0"
-  spec.add_development_dependency "pry", '~> 0.10.3'
+  spec.add_development_dependency "pry", '~> 0.10'
 end
