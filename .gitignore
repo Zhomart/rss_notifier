@@ -7,7 +7,7 @@
 /pkg/
 /spec/reports/
 /tmp/
-
+/*.gem
 /config.yml
 /db.pstore
 /db.yml
