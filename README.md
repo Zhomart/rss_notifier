@@ -8,6 +8,9 @@ It checks given rss urls every given period and notifies you using [Pushbullet](
 Install the gem
 
 ```
+$ sudo apt-get install libgmp3-dev
+$ yum install gmp-devel.x86_64
+
 $ gem install rss_notifier
 ```
 

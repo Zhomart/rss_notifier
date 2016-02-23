@@ -62,17 +62,27 @@ module RssNotifier
     def run
       loop do
         check_rss!
+        RssNotifier.logger.info "Waiting for #{@config.period_in_minutes} minutes"
         sleep @config.period_in_minutes * 60
       end
     end
 
     def check_rss!
-      RssNotifier.logger.info "Checking #{@config.rss_urls.size} urls"
-
       @config.rss_urls.each do |url_object|
         title, url = url_object[:title], url_object[:url]
+
+        RssNotifier.logger.info "Checking #{title} | #{url}"
+
         raw = HTTP.get(url).to_s
-        feed = RSS::Parser.parse(raw)
+        feed = nil
+        begin
+          raw = raw.encode('UTF-8', 'binary', invalid: :replace, undef: :replace, replace: '')
+          feed = RSS::Parser.parse(raw)
+        rescue => e
+          RssNotifier.logger.warn "Cannot parse RSS: #{e}"
+          puts e.backtrace
+          next
+        end
         items = []
         feed.items.each do |item|
           items << Item.new({
