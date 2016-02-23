@@ -9,4 +9,5 @@
 /tmp/
 
 /config.yml
+/db.pstore
 /db.yml

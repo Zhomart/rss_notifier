@@ -1,33 +1,31 @@
 require 'yaml/store'
+# require 'pstore'
 
 module RssNotifier
   class Db
 
     attr_reader :store
-    attr_accessor :db
+    attr_accessor :items
 
 
     def initialize(store)
-      # { 'url' => { 'url' => { 'saved_at', 'date', 'title' } }, ... }
-      @db = {}
+      # { item_url => Item, ... }
+      @items = {}
       @store = store
     end
 
     # @param url [String]
-    # @param items [Array] { 'date', 'url', 'title' }
+    # @param items [Array] of Item
     # @return [Boolean] changed?
-    def update(url, items)
-      local_items = (@db[url] ||= {})
-      items.each do |it|
-        item = it.dup
-        item_url = item.delete('url')
-        if !item_url || item_url.empty?
-          RssNotifier.logger.warn "Empty item_url for url #{url}"
+    def update(new_items)
+      new_items.each do |item|
+        if !item.link || item.link.empty?
+          RssNotifier.logger.warn "Empty item_url for url #{item.link}"
           next
         end
-        old_item = local_items[item_url] || {}
-        item['saved_at'] = old_item['saved_at']
-        local_items[item_url] = item
+
+        old_item = self.items[item.link] ||= Item.new
+        old_item.update(item.to_h)
       end
       changed?
     end
@@ -36,19 +34,12 @@ module RssNotifier
       0 < changed_items.size
     end
 
-    # @return [Array] { 'url', 'title', 'date', 'saved_at' }
+    # @return [Array] of Item
     def changed_items
       ch_items = []
-      @db.each do |url, items|
-        items.each do |item_url, item|
-          if !item['saved_at'] || item['saved_at'] < item['date']
-            ch_items << {
-              'url' => item_url,
-              'title' => item['title'],
-              'date' => item['date'],
-              'saved_at' => item['saved_at'],
-            }
-          end
+      @items.each do |url, item|
+        if item.new_record? || item.changed?
+          ch_items << item
         end
       end
       ch_items
@@ -57,22 +48,21 @@ module RssNotifier
     def save
       return true unless changed?
 
-      @db.each do |url, items|
-        items.each do |item_url, item|
-          item['saved_at'] = Time.now
-        end
+      @items.each do |url, item|
+        item.saved_at = Time.now
       end
       store.transaction do
-        store['db'] = @db
+        store['items'] = @items
       end
       true
     end
 
     def self.load(filename)
       store = YAML::Store.new(filename)
+      # store = PStore.new(filename)
       db = RssNotifier::Db.new(store)
       store.transaction do
-        db.db = store['db'] || {}
+        db.items = store['items'] || {}
       end
       db
     end

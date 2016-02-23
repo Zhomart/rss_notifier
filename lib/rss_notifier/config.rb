@@ -5,8 +5,19 @@ module RssNotifier
   class Config < OpenStruct
 
     DEFAULTS = {
-      emails: [ 'me@example.com' ],
-      rss_urls: [ { title: 'Some News', url: 'http://some-site.com/rss' } ],
+      adapters: {
+        email: {
+          mailgun_api: 'something',
+          from: 'Excited User <mailgun@YOUR_DOMAIN_NAME>'
+        }
+      },
+      notify: [
+        { email: 'me@example.com', adapter: 'email', enabled: false },
+        { name: 'mini me', access_token: '<get from pushbullet.com/#settings>', adapter: 'pushbullet', enabled: false },
+      ],
+      rss_urls: [
+        { title: 'Some News', url: 'http://some-site.com/rss' }
+      ],
       period_in_minutes: 20
     }
 

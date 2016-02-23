@@ -1,6 +1,7 @@
 require 'rss_notifier/adapter'
 require 'rss_notifier/config'
 require 'rss_notifier/db'
+require 'rss_notifier/item'
 
 require 'pathname'
 require 'rss'
@@ -39,10 +40,25 @@ module RssNotifier
     def initialize(notify: false)
       @config = RssNotifier::Config.load(CONFIG_FILE)
       @db = RssNotifier::Db.load(DB_FILE)
-
+      @notify = []
       @options = {
         notify: notify
       }
+
+      setup_notify(@config.notify)
+    end
+
+    def setup_notify(notify)
+      notify.each do |d|
+        next unless d[:enabled]
+        if d[:adapter] == 'email'
+          @notify << Adapter::Email.new(d[:email])
+        elsif d[:adapter] == 'pushbullet'
+          @notify << Adapter::Pushbullet.new(d[:name], d[:access_token])
+        else
+          raise "Unknown adapter #{d[:adapter]}"
+        end
+      end
     end
 
     def run
@@ -61,13 +77,16 @@ module RssNotifier
         feed = RSS::Parser.parse(raw)
         items = []
         feed.items.each do |item|
-          items << {
-            'url' => item.link,
-            'title' => item.title,
-            'date' => item.date,
-          }
+          items << Item.new({
+            rss_url: url,
+            rss_title: title,
+            link: item.link,
+            title: item.title,
+            description: item.description,
+            date: item.date
+          })
         end
-        @db.update(url, items)
+        @db.update(items)
       end
       changed_items = @db.changed_items
       is_changed = @db.changed?
@@ -82,13 +101,20 @@ module RssNotifier
         RssNotifier.logger.info "#{changed_items.size} items changed, notifing..."
 
         changed_items.each do |item|
-          notify!(item['url'], item['title'], item['date'])
+          notify!(item)
         end
       end
     end
 
-    def notify!(item_url, title, date)
-      puts 'asd'
+    def notify!(item)
+      @notify.each do |notify|
+        begin
+          notify.notify(item)
+        rescue => e
+          puts "#{e}: #{item.link} | #{notify}"
+          puts e.backtrace
+        end
+      end
     end
 
   end
