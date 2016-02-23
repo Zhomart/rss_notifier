@@ -26,6 +26,15 @@ Then initialize it somewhere
 If you want it to run in the background, use `tmux`.
 
 
+## Craigslist
+
+1. Create a search url on craigslist, e.g. http://sfbay.craigslist.org/search/bik?query=trek+520
+2. Make it RSS by clicking `RSS` on the bottom-right of the page, e.g. https://sfbay.craigslist.org/search/bik?format=rss&query=trek%20520
+3. Install gem and initialize it.
+4. Add RSS link to the `config.yml`.
+5. Start `rss_notifier`.
+
+
 ## Development
 
 To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
