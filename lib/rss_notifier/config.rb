@@ -7,13 +7,13 @@ module RssNotifier
     DEFAULTS = {
       adapters: {
         email: {
-          mailgun_api: 'something',
-          from: 'Excited User <mailgun@YOUR_DOMAIN_NAME>'
+          sendgrid_api_key: '<Get it from sendgrid.com>',
+          from: 'RSS Notifier <rss-notifier@joma.pw>',
         }
       },
       notify: [
         { email: 'me@example.com', adapter: 'email', enabled: false },
-        { name: 'mini me', access_token: '<get from pushbullet.com/#settings>', adapter: 'pushbullet', enabled: false },
+        { name: 'mini me', access_token: '<Get it from pushbullet.com>', adapter: 'pushbullet', enabled: false },
       ],
       rss_urls: [
         { name: 'Some News', url: 'http://some-site.com/rss' }

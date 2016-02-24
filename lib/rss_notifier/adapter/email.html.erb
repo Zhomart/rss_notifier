@@ -42,11 +42,11 @@
     </style>
   </head>
   <body>
-    <h1><a href="<%= item.link %>"><%= item.title %></a></h1>
+    <h1><a href="<%= item.link %>"><%= item.feed.name %> | <%= item.title %></a></h1>
     <hr>
     <div class="row">
       <div class="mini-info">
-        <b>RSS URL:</b> <span style="word-wrap: break-word;"><%= item.rss_url %></span> <br><br>
+        <b>RSS URL:</b> <span style="word-wrap: break-word;"><%= item.feed.url %></span> <br><br>
         <b>Date:</b> <%= item.date.strftime('%Y-%m-%d %H:%M:%S') %> <br>
       </div>
       <div class="clearfix"></div>

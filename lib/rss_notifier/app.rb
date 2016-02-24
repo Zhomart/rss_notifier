@@ -50,7 +50,7 @@ module RssNotifier
       notify.each do |d|
         next unless d[:enabled]
         if d[:adapter] == 'email'
-          @notify << Adapter::Email.new(d[:email])
+          @notify << Adapter::Email.new(d[:email], @config)
         elsif d[:adapter] == 'pushbullet'
           @notify << Adapter::Pushbullet.new(d[:name], d[:access_token])
         else
