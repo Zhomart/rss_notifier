@@ -3,6 +3,17 @@
 It checks given rss urls every given period and notifies you using [Pushbullet](https://www.pushbullet.com).
 
 
+## Getting notifications
+
+### Email
+
+Create an account on https://sendgrid.com and generate API Key.
+
+### Pushbullet
+
+Create an account on https://www.pushbullet.com and generate Access Token.
+
+
 ## Usage
 
 Install the gem
