@@ -24,6 +24,8 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'virtus', '~> 1.0'
   spec.add_dependency 'inflecto', '~> 0.0'
   spec.add_dependency 'sendgrid-ruby', '~> 1.1'
+  spec.add_dependency 'htmlentities', '~> 4.3'
+  spec.add_dependency 'colorize', '~> 0.0'
 
   spec.add_development_dependency "bundler", "~> 1.11"
   spec.add_development_dependency "rake", "~> 10.0"

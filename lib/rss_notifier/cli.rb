@@ -1,4 +1,5 @@
 require 'thor'
+require 'colorize'
 
 module RssNotifier
   class Cli < Thor
@@ -20,7 +21,7 @@ module RssNotifier
     method_options :notify => :boolean
     def start
       unless options.notify?
-        RssNotifier.logger.warn "Notifcation is disabled. To enable, run $ rss_notifier start --notify"
+        RssNotifier.logger.warn "Notifcation is disabled. To enable, run $ rss_notifier start --notify".red
       end
 
       app = RssNotifier::App.new(notify: options.notify?)

@@ -2,12 +2,6 @@ require 'virtus'
 require 'inflecto'
 require 'json'
 
-# {
-#   rss_url => {
-#     'Last-Modified' => 'blah',
-#     'items' => { item_url => Item, ... },
-#   }
-# }
 module RssNotifier
   module Models
     class Feed
@@ -15,6 +9,7 @@ module RssNotifier
 
       attribute :url, String
       attribute :name, String
+      attribute :last_modified, Time
       attribute :items, Array['RssNotifier::Models::Item']
 
       # updated_at in DB
@@ -56,6 +51,7 @@ module RssNotifier
           'url' => url,
           'name' => name,
           'updated_at' => updated_at,
+          'last_modified' => last_modified,
           'items' => items.map(&:to_db_object),
         }
       end

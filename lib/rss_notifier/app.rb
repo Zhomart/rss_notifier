@@ -6,6 +6,7 @@ require 'rss_notifier/models'
 require 'pathname'
 require 'rss'
 require 'http'
+require 'htmlentities'
 
 module RssNotifier
   class App
@@ -42,6 +43,7 @@ module RssNotifier
       @options = {
         notify: notify
       }
+      @html_coder = HTMLEntities.new
 
       setup_notify(@config.notify)
     end
@@ -85,8 +87,25 @@ module RssNotifier
         rss_raw = nil
         response = nil
         begin
-          response = HTTP.get(url)
-          # require 'pry'; binding.pry
+          headers = {}
+          max_cache_duration = 20*60 # 20 minutes
+          if feed.last_modified
+            headers['If-Modified-Since'] = feed.last_modified.utc.httpdate
+          end
+          headers['Cache-Control'] = 'no-cache'
+          response = HTTP.headers(headers).get(url)
+
+          if response.code == 304
+            RssNotifier.logger.info "Not modified since #{feed.last_modified}: #{name} | #{url}"
+            next
+          elsif response.code != 200
+            RssNotifier.logger.warn "got non 200 code: #{response.code}:"
+            puts response.body.to_s
+            next
+          end
+
+          feed.last_modified = Time.parse(response.headers['Last-Modified'])
+
           raw_encoded = response.to_s.encode('UTF-8', 'binary', invalid: :replace, undef: :replace, replace: '')
           rss_raw = RSS::Parser.parse(raw_encoded)
         rescue => e
@@ -94,11 +113,12 @@ module RssNotifier
           puts e.backtrace
           next
         end
+
         rss_raw.items.each do |raw_item|
           item = feed.find_or_create_item(link: raw_item.link)
           item.update({
-            title: raw_item.title,
-            description: raw_item.description,
+            title: decode_html(raw_item.title),
+            description: decode_html(raw_item.description),
             date: raw_item.date
           })
           changed_items << item if item.changed?
@@ -121,6 +141,12 @@ module RssNotifier
       else
         RssNotifier.logger.info "#{changed_items.size} items changed"
       end
+    end
+
+    def decode_html(encoded)
+      @html_coder.decode(encoded)
+    rescue => e
+      encoded
     end
 
     def notify!(item)
