@@ -11,7 +11,12 @@ module RssNotifier
       RssNotifier::App.init(force: options.force?)
     end
 
-    desc "start", "starts the app"
+    desc "version", "Shows version"
+    def version
+      puts RssNotifier::VERSION
+    end
+
+    desc "start", "Starts the app"
     method_options :notify => :boolean
     def start
       unless options.notify?

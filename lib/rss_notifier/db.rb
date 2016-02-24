@@ -2,8 +2,6 @@ require 'yaml/store'
 
 require 'rss_notifier/models'
 
-require 'pry'
-
 module RssNotifier
   class Db
 
