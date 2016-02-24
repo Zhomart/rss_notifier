@@ -1,15 +1,18 @@
 require 'yaml/store'
 
+require 'rss_notifier/models'
+
+require 'pry'
+
 module RssNotifier
   class Db
 
     attr_reader :store
-    attr_accessor :items
+    attr_accessor :feeds
 
 
     def initialize(store)
-      # { item_url => Item, ... }
-      @items = {}
+      @feeds = {}
       @store = store
     end
 
@@ -56,13 +59,42 @@ module RssNotifier
       true
     end
 
+    # @return [RssNotifier::Models::Feed] creates new Feed if not found
+    def get_feed(url:, name:)
+      @feeds[url] ||= RssNotifier::Models::Feed.new(url: url.to_s.strip, name: name)
+    end
+
+    # @return [RssNotifier::Models::Feed]
+    def find_feed(url:)
+      @feeds[url.to_s.strip]
+    end
+
+    def load
+      @feeds = {}
+      store.transaction do
+        feeds_raw = store['feeds'] || {}
+        feeds_raw.each do |url, feed_raw|
+          feed = RssNotifier::Models::Feed.new(feed_raw)
+          @feeds[feed.url] = feed
+        end
+      end
+      self
+    end
+
+    # @return [RssNotifier::Db]
+    def self.default
+      @default or raise "Not initialized"
+    end
+
+    def self.default=(default)
+      @default = default
+    end
+
     def self.load(filename)
       store = YAML::Store.new(filename)
-      db = RssNotifier::Db.new(store)
-      store.transaction do
-        db.items = store['items'] || {}
-      end
-      db
+      RssNotifier::Db.default = RssNotifier::Db.new(store)
+      RssNotifier::Db.default.load
+      RssNotifier::Db.default
     end
 
   end

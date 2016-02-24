@@ -16,7 +16,7 @@ module RssNotifier
         { name: 'mini me', access_token: '<get from pushbullet.com/#settings>', adapter: 'pushbullet', enabled: false },
       ],
       rss_urls: [
-        { title: 'Some News', url: 'http://some-site.com/rss' }
+        { name: 'Some News', url: 'http://some-site.com/rss' }
       ],
       period_in_minutes: 20
     }

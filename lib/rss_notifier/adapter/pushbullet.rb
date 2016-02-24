@@ -16,7 +16,7 @@ module RssNotifier
       def notify(item)
         body = JSON.dump({
           'type' => 'link',
-          'title' => "#{item.rss_title}",
+          'title' => "#{item.feed.name}",
           'body' => item.title,
           'url' => item.link
         })

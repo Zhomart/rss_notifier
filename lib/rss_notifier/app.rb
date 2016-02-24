@@ -1,7 +1,7 @@
 require 'rss_notifier/adapter'
 require 'rss_notifier/config'
 require 'rss_notifier/db'
-require 'rss_notifier/item'
+require 'rss_notifier/models'
 
 require 'pathname'
 require 'rss'
@@ -67,40 +67,47 @@ module RssNotifier
       end
     end
 
+    # @return [Array] of tuples (url, name)
+    def rss_urls_from_config
+      @rss_urls_from_config ||= @config.rss_urls.map do |o|
+        [ o[:url].to_s.strip, o[:name].to_s.strip ]
+      end.to_h
+    end
+
     def check_rss!
-      @config.rss_urls.each do |url_object|
-        title, url = url_object[:title], url_object[:url]
+      changed_items = []
 
-        RssNotifier.logger.info "Checking #{title} | #{url}"
+      rss_urls_from_config.each do |url, name|
+        RssNotifier.logger.info "Checking #{name} | #{url}"
 
-        raw = HTTP.get(url).to_s
-        feed = nil
+        feed = @db.get_feed(url: url, name: name)
+
+        rss_raw = nil
+        response = nil
         begin
-          raw = raw.encode('UTF-8', 'binary', invalid: :replace, undef: :replace, replace: '')
-          feed = RSS::Parser.parse(raw)
+          response = HTTP.get(url)
+          # require 'pry'; binding.pry
+          raw_encoded = response.to_s.encode('UTF-8', 'binary', invalid: :replace, undef: :replace, replace: '')
+          rss_raw = RSS::Parser.parse(raw_encoded)
         rescue => e
           RssNotifier.logger.warn "Cannot parse RSS: #{e}"
           puts e.backtrace
           next
         end
-        items = []
-        feed.items.each do |item|
-          items << Item.new({
-            rss_url: url,
-            rss_title: title,
-            link: item.link,
-            title: item.title,
-            description: item.description,
-            date: item.date
+        rss_raw.items.each do |raw_item|
+          item = feed.find_or_create_item(link: raw_item.link)
+          item.update({
+            title: raw_item.title,
+            description: raw_item.description,
+            date: raw_item.date
           })
+          changed_items << item if item.changed?
         end
-        @db.update(items)
-      end
-      changed_items = @db.changed_items
-      is_changed = @db.changed?
-      @db.save
 
-      unless is_changed
+        feed.save
+      end
+
+      if changed_items.empty?
         RssNotifier.logger.info 'No changes'
         return
       end
@@ -111,6 +118,8 @@ module RssNotifier
         changed_items.each do |item|
           notify!(item)
         end
+      else
+        RssNotifier.logger.info "#{changed_items.size} items changed"
       end
     end
 

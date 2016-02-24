@@ -26,6 +26,9 @@ module RssNotifier
         b = binding
         b.local_variable_set(:item, item)
         html = @template.result(b)
+
+        # TODO send email
+
         puts "-------"
       end
 
