@@ -35,7 +35,7 @@ module RssNotifier
           m.to = email
           m.from = @config[:adapters][:email][:from]
           m.subject = "#{item.feed.name} | #{item.title}"
-          m.text = html
+          m.html = html
         end
 
         client = RssNotifier::Adapter::Email.client(@config[:adapters][:email][:sendgrid_api_key])
