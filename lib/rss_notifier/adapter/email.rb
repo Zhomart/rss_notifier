@@ -43,10 +43,10 @@ module RssNotifier
         begin
           res = client.send(mail)
           if res.code == 200
+            RssNotifier.logger.debug("#{self} notified")
+          else
             RssNotifier.logger.warn("Could not notify #{self}. Code=#{res.code}")
             p res.body
-          else
-            RssNotifier.logger.debug("#{self} notified")
             return false
           end
         rescue => e
