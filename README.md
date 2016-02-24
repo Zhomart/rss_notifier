@@ -49,10 +49,11 @@ If you want it to run in the background, use `tmux`.
 ## Craigslist
 
 1. Create a search url on craigslist, e.g. http://sfbay.craigslist.org/search/bik?query=trek+520
-2. Make it RSS by clicking `RSS` on the bottom-right of the page, e.g. https://sfbay.craigslist.org/search/bik?format=rss&query=trek%20520
+2. Make it RSS by clicking orange button `RSS` on the bottom-right of the page, e.g. https://sfbay.craigslist.org/search/bik?format=rss&query=trek%20520
 3. Install gem and initialize it.
 4. Add RSS link to the `config.yml`.
-5. Start `rss_notifier`.
+5. Start without notification: `$ rss_notifier start`, other you'll flood your inbox.
+6. Start with notification: `$ rss_notifier start --notify`. I use `tmux` to run it in the background.
 
 
 ## Development
